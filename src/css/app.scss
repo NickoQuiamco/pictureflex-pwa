@@ -5,3 +5,23 @@
 .text-grand-hotel{
     font-family: 'Grand Hotel', 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
+.small-screen{
+    @media (max-width: $breakpoint-xs-max){
+        display: block;
+    }
+    @media (min-width: $breakpoint-sm-min){
+        display: none;
+    }
+}
+.large-screen{
+    @media (max-width: $breakpoint-xs-max){
+        display: none;
+    }
+    @media (min-width: $breakpoint-sm-min){
+        display: inline-flex;
+    }
+}
+.constrain{
+    max-width: 980px;
+    margin: 0 auto;
+}
