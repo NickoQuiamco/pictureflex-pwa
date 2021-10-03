@@ -16,12 +16,25 @@
         </div>
         <div class="text-center q-pa-md">
           <q-btn
+            v-if="hasCameraSupport"
             @click="captureImage"
             icon="eva-camera" 
             color="grey-10"
             size="lg"
             round
             />
+            <q-file
+              v-else
+              v-model="img_upload"
+              @update:model-value="captureImageFallback"
+              label="Choose an image"
+              accept="image/*"
+              outlined
+              >
+              <template v-slot:prepend>
+                <q-icon name="eva-attach-outline" />
+              </template>
+            </q-file>
         </div>
         <div class="row justify-center q-ma-md">
           <q-input
@@ -71,46 +84,89 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, onUnmounted } from 'vue';
 import { uid } from 'quasar';
 require('md-gum-polyfill');
 
 export default defineComponent({
   name: 'PageCamera',
   setup(){
+    //data variable declaration***
     const post = ref({
       id: uid(),
       caption: "",
       location: "",
-      photo: "",
+      photo: null,
       date: Date.now(),
     });
-    const video = ref(null); 
-    const canvas = ref(null); 
-    const image_captured = ref(false);
-
+    const img_upload = ref([])
+    const video = ref(null)
+    const canvas = ref(null)
+    const image_captured = ref(false)
+    const hasCameraSupport = ref(true)
 
     // methods ***
     function initCamera(){
       navigator.mediaDevices.getUserMedia({
         video: true
       }).then(stream=>{
-        video.srcObject = stream
+        video.value.srcObject = stream
+      }).catch(error=>{
+        hasCameraSupport.value = false
       })
     }
     function captureImage(){
-      canvas.width = video.getBoundingClientRect().width;
-      canvas.height = video.getBoundingClientRect().height;
-      let context = canvas.getContext('2d');
+      canvas.width = video.getBoundingClientRect().width
+      canvas.height = video.getBoundingClientRect().height
+      let context = canvas.getContext('2d')
       context.drawImage(video, 0, 0, canvas.width, canvas.height)
       image_captured.value = false
+      post.value.photo = dataURItoBlob(canvas.toDataURL())
+      disableCamera();
     }
-
-
-
+    function dataURItoBlob(dataURI) {
+      var byteString = atob(dataURI.split(',')[1])
+      var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+      var ab = new ArrayBuffer(byteString.length)
+      var ia = new Uint8Array(ab)
+      for (var i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i)
+      }
+      var blob = new Blob([ab], {type: mimeString})
+      return blob;
+    }
+    function captureImageFallback(file){
+      post.value.photo = file
+      image_captured.value = true
+      let context = canvas.value.getContext('2d');
+      var reader = new FileReader()
+      reader.onload = (event)=>{
+        var img = new Image();
+        img.onload = ()=>{
+            canvas.value.width = img.width
+            canvas.value.height = img.height
+            context.drawImage(img,0,0)
+        }
+        img.src = event.target.result
+      }
+      reader.readAsDataURL(file)
+    }
+    function disableCamera(){
+      video.value.srcObject.getVideoTracks().foreach(track=>{
+        track.stop
+      });
+    }
+    
+    // console.log(hasCameraSupport.value);
+    onUnmounted(() => {
+      if(hasCameraSupport){
+        console.log("here");
+        // disableCamera();
+      }
+    })
 
     initCamera();
-    return{ post, initCamera, captureImage, image_captured }
+    return{ post, initCamera, captureImage, image_captured, hasCameraSupport, img_upload, captureImageFallback, video, canvas }
   }
 })
 </script>
