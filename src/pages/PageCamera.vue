@@ -3,7 +3,10 @@
     <div class="row q-col-gutter-lg">
       <div class="col-12 col-sm-8">
         <div class="camera-frame q-pa-md">
-          <img class="full-width" src="https://cdn.quasar.dev/img/parallax2.jpg">
+          <video
+            ref="video"
+            class="full-width"
+            autoplay />
         </div>
         <div class="text-center q-pa-md">
           <q-btn
@@ -14,10 +17,15 @@
             />
         </div>
         <div class="row justify-center q-ma-md">
-          <q-input class="col col-sm-6" label="Caption" dense />
+          <q-input
+            v-model="post.caption"
+            class="col col-sm-6"
+            label="Caption"
+            dense />
         </div>
         <div class="row justify-center q-ma-md">
           <q-input
+            v-model="post.location"
             class="col col-sm-6"
             label="Location"
             dense>
@@ -33,10 +41,10 @@
             color="primary"
             label="Post Image" />
         </div>
+        <!-- {{ post }} -->
       </div>
       <div class="col-4 large-screen">
         <q-item class="fixed">
-            <!-- {{ props_data }} -->
           <q-item-section avatar>
             <q-avatar size="48px">
               <img src="https://cdn.quasar.dev/img/boy-avatar.png">
@@ -47,7 +55,6 @@
             <q-item-label class="text-bold">Krono Lyon</q-item-label>
             <q-item-label caption>
               Nicko Quiamco
-              <!-- {{props_data.location}} -->
             </q-item-label>
           </q-item-section>
         </q-item>
@@ -57,10 +64,34 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
+import { uid } from 'quasar';
 
 export default defineComponent({
-  name: 'PageCamera'
+  name: 'PageCamera',
+  setup(){
+    const post = ref({
+      id: uid(),
+      caption: "",
+      location: "",
+      photo: "",
+      date: Date.now(),
+    });
+    const video = ref(null); 
+
+
+    // methods ***
+    console.log(video);
+    function initCamera(){
+      navigator.mediaDevices.getUserMedia({
+        video: true
+      }).then(stream=>{
+        video.srcObject = stream
+      })
+    }
+    initCamera();
+    return{ post, initCamera }
+  }
 })
 </script>
 <style lang="scss" scoped>
