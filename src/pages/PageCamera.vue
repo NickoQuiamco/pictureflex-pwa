@@ -66,7 +66,6 @@
 <script>
 import { defineComponent, ref } from 'vue';
 import { uid } from 'quasar';
-require('md-gum-polyfill');
 
 export default defineComponent({
   name: 'PageCamera',
