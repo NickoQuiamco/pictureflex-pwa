@@ -4,12 +4,19 @@
       <div class="col-12 col-sm-8">
         <div class="camera-frame q-pa-md">
           <video
+            v-show="!image_captured"
             ref="video"
             class="full-width"
             autoplay />
+            <canvas
+              v-show="image_captured"
+              ref="canvas"
+              class="full-width"
+              height="240" />
         </div>
         <div class="text-center q-pa-md">
           <q-btn
+            @click="captureImage"
             icon="eva-camera" 
             color="grey-10"
             size="lg"
@@ -66,6 +73,7 @@
 <script>
 import { defineComponent, ref } from 'vue';
 import { uid } from 'quasar';
+require('md-gum-polyfill');
 
 export default defineComponent({
   name: 'PageCamera',
@@ -78,10 +86,11 @@ export default defineComponent({
       date: Date.now(),
     });
     const video = ref(null); 
+    const canvas = ref(null); 
+    const image_captured = ref(false);
 
 
     // methods ***
-    console.log(video);
     function initCamera(){
       navigator.mediaDevices.getUserMedia({
         video: true
@@ -89,8 +98,19 @@ export default defineComponent({
         video.srcObject = stream
       })
     }
+    function captureImage(){
+      canvas.width = video.getBoundingClientRect().width;
+      canvas.height = video.getBoundingClientRect().height;
+      let context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height)
+      image_captured.value = false
+    }
+
+
+
+
     initCamera();
-    return{ post, initCamera }
+    return{ post, initCamera, captureImage, image_captured }
   }
 })
 </script>
