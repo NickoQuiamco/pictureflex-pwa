@@ -46,11 +46,12 @@
         <div class="row justify-center q-ma-md">
           <q-input
             v-model="post.location"
+            :loading="locationLoading"
             class="col col-sm-6"
             label="Location"
             dense>
             <template v-slot:append>
-              <q-btn round dense flat icon="eva-navigation-2-outline" />
+              <q-btn v-if="!locationLoading && locationSupported" @click.prevent="getLocation" round dense flat icon="eva-pin-outline" />
             </template>
           </q-input>
         </div>
@@ -84,13 +85,15 @@
 </template>
 
 <script>
-import { defineComponent, ref, onUnmounted } from 'vue';
-import { uid } from 'quasar';
+import { defineComponent, ref, onUnmounted, computed } from 'vue';
+import { useQuasar, uid } from 'quasar'
+import axios from 'axios';
 require('md-gum-polyfill');
 
 export default defineComponent({
   name: 'PageCamera',
   setup(){
+    const $q = useQuasar()
     //data variable declaration***
     const post = ref({
       id: uid(),
@@ -103,8 +106,13 @@ export default defineComponent({
     const video = ref(null)
     const canvas = ref(null)
     const image_captured = ref(false)
-    const hasCameraSupport = ref(true)
-
+    var hasCameraSupport = ref(true)
+    const locationLoading = ref(false)
+    // computed ***
+    const locationSupported = computed(function(){
+      if('geolocation' in navigator ) return true
+      return false
+    })
     // methods ***
     function initCamera(){
       navigator.mediaDevices.getUserMedia({
@@ -156,17 +164,50 @@ export default defineComponent({
         track.stop
       });
     }
-    
-    // console.log(hasCameraSupport.value);
+    function getLocation(){
+      locationLoading.value = true
+      navigator.geolocation.getCurrentPosition(position=>{
+      getCityAndCountry(position);  
+      },err=>{
+        // console.log(err);
+        locationError();
+      }, { timeout:7000 })
+    }
+    function getCityAndCountry(position){
+      let api_url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`
+      // let api_url = `https://geocode.xyz/${ position.coords.latitude },${ position.coords.longitude }?json=1`;
+      axios.get(api_url).then(res=>{
+        locationSuccess(res);
+      }).catch(err=>{
+        locationError();
+        // console.log(err);
+      });
+    }
+    function locationSuccess(res){
+      let data = res.data.address;
+      post.value.location = data.city;
+      if(data.country){
+        post.value.location += ", " + data.country;
+      }
+      locationLoading.value = false
+    }
+    function locationError(){
+      $q.notify({
+        type: 'negative',
+        message: 'Could not find your location.',
+        position: 'top-right'
+      })
+      locationLoading.value = false
+    }
+
+    initCamera();
     onUnmounted(() => {
-      if(hasCameraSupport){
-        console.log("here");
-        // disableCamera();
+      if(hasCameraSupport.value){
+        disableCamera();
       }
     })
 
-    initCamera();
-    return{ post, initCamera, captureImage, image_captured, hasCameraSupport, img_upload, captureImageFallback, video, canvas }
+    return{ post, initCamera, captureImage, image_captured, hasCameraSupport, img_upload, captureImageFallback, video, canvas, getLocation, locationLoading, locationSupported }
   }
 })
 </script>
