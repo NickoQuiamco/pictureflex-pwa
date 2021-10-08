@@ -192,7 +192,7 @@ export default defineComponent({
       locationLoading.value = false
     }
     function locationError(){
-      $q.notify({
+      q.notify({
         type: 'negative',
         message: 'Could not find your location.',
         position: 'top-right'
