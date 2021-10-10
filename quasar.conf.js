@@ -138,13 +138,13 @@ module.exports = configure(function (ctx) {
       },
 
       manifest: {
-        name: `quasagram-pwa`,
-        short_name: `quasagram-pwa`,
-        description: `instagram clone made in progressive web app`,
+        name: `Picture Flex`,
+        short_name: `Picture-flex`,
+        description: `Share your experience and flex your pictures here`,
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#ffffff',
-        theme_color: '#027be3',
+        background_color: '#212121',
+        theme_color: '#212121',
         icons: [
           {
             src: 'icons/icon-128x128.png',
@@ -205,7 +205,7 @@ module.exports = configure(function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'quasagram-pwa'
+        appId: 'picture-flex'
       },
 
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain

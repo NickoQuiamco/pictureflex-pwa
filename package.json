@@ -2,11 +2,11 @@
   "name": "quasagram-pwa",
   "version": "0.0.1",
   "description": "instagram clone made in progressive web app",
-  "productName": "quasagram-pwa",
+  "productName": "Picture Flex",
   "author": "Nicko <quiamconicko@gmail.com>",
   "private": true,
   "scripts": {
-    "test": "echo \"No test specified\" && exit 0"
+    "icons": "icongenie generate -i src/assets/picture2.png --skip-trim --theme-color fff"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
@@ -18,7 +18,8 @@
     "vuex": "^4.0.1"
   },
   "devDependencies": {
-    "@quasar/app": "^3.0.0"
+    "@quasar/app": "^3.0.0",
+    "workbox-webpack-plugin": "^6.3.0"
   },
   "browserslist": [
     "last 10 Chrome versions",
