@@ -18,6 +18,7 @@
           <q-btn
             v-if="hasCameraSupport"
             @click="captureImage"
+            :disable="image_captured"
             icon="eva-camera" 
             color="grey-10"
             size="lg"
@@ -40,7 +41,7 @@
           <q-input
             v-model="post.caption"
             class="col col-sm-6"
-            label="Caption"
+            label="Caption *"
             dense />
         </div>
         <div class="row justify-center q-ma-md">
@@ -57,10 +58,13 @@
         </div>
         <div class="row justify-center q-mt-lg">
           <q-btn
+            @click="addPost"
+            :disable="!post.caption || !post.photo"
+            color="primary"
+            label="Post Image" 
             unelevated
             rounded
-            color="primary"
-            label="Post Image" />
+          />
         </div>
         <!-- {{ post }} -->
       </div>
@@ -86,14 +90,17 @@
 
 <script>
 import { defineComponent, ref, onUnmounted, computed } from 'vue';
-import { useQuasar, uid } from 'quasar'
+import { useQuasar, uid, Loading, QSpinnerHourglass } from 'quasar'
+import { useRouter } from 'vue-router'
 import axios from 'axios';
+
 require('md-gum-polyfill');
 
 export default defineComponent({
   name: 'PageCamera',
   setup(){
-    const $q = useQuasar()
+    const q = useQuasar()
+    const router = useRouter()
     //data variable declaration***
     const post = ref({
       id: uid(),
@@ -199,6 +206,42 @@ export default defineComponent({
       })
       locationLoading.value = false
     }
+    function addPost(){
+      // console.log("here");
+      let form_data = new FormData()
+      form_data.append('id', post.value.id)
+      form_data.append('caption', post.value.caption)
+      form_data.append('location', post.value.location)
+      form_data.append('date', post.value.date)
+      form_data.append('file', post.value.photo, post.value.id + '.png')
+
+      Loading.show({
+        spinner: QSpinnerHourglass,
+        spinnerSize: 120
+        // other props
+      })
+      axios.post(`${ process.env.API }/createPost`, form_data).then(response=>{
+        router.push("/")
+        q.notify({
+          message: 'Post created.',
+          position: 'top-right',
+          actions: [
+            { label: 'Dismiss', color: 'white', handler: () => { /* ... */ } }
+          ]
+        })
+        Loading.hide()
+      }).catch(err=>{
+        console.log(err);
+        q.notify({
+          message: 'Sorry, could not create post.',
+          position: 'top-right',
+          actions: [
+            { label: 'Dismiss', color: 'white', handler: () => { /* ... */ } }
+          ]
+        })
+        Loading.hide()
+      })
+    }
 
     initCamera();
     onUnmounted(() => {
@@ -207,7 +250,21 @@ export default defineComponent({
       }
     })
 
-    return{ post, initCamera, captureImage, image_captured, hasCameraSupport, img_upload, captureImageFallback, video, canvas, getLocation, locationLoading, locationSupported }
+    return{ 
+      post, 
+      initCamera, 
+      captureImage, 
+      image_captured, 
+      hasCameraSupport, 
+      img_upload, 
+      captureImageFallback, 
+      video, 
+      canvas, 
+      getLocation, 
+      locationLoading, 
+      locationSupported, 
+      addPost
+    }
   }
 })
 </script>

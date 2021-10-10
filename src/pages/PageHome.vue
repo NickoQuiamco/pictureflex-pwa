@@ -74,8 +74,8 @@ export default defineComponent({
     const loadingPosts = ref(false)
     function getPost(){
       loadingPosts.value = true
-      axios.get(`http://localhost:3000/posts`).then(response=>{
-        // console.log(response);
+        // console.log(process.env.API);
+      axios.get(`${ process.env.API }/posts`).then(response=>{
         posts.value = response.data
         loadingPosts.value = false
       }).catch(error=>{

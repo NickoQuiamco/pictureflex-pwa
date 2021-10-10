@@ -8,7 +8,7 @@
 
 const { configure } = require('quasar/wrappers');
 let API_LOCAL = 'http://localhost:3000',
-    API_PRODUCTION = 'https://picturegram-app.herokuapp.com/'
+    API_PRODUCTION = 'https://picturegram-app.herokuapp.com'
 
 module.exports = configure(function (ctx) {
   return {
@@ -76,7 +76,7 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      https: true,
+      https: false,
       port: 100,
       open: false // opens browser window automatically
     },
@@ -96,7 +96,7 @@ module.exports = configure(function (ctx) {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Notify']
+      plugins: ['Notify', 'Loading']
     },
 
     // animations: 'all', // --- includes all animations
