@@ -31,31 +31,37 @@
     </q-page-container>
 
     <q-footer class="bg-white" bordered >
-      <div v-if="show_app_install_banner" class="banner-container bg-primary">
-        <div class="constrain">
-          <q-banner
-            inline-actions
-            dense
-            class="bg-primary text-white">
-            <template v-slot:avatar>
-              <q-avatar
-                color="white"
-                text-color="black"
-                icon="eva-image-2"
-                font-size="22px"
-                dense
-              />
-            </template>
-            <b> Install Picture Flex? </b>
+      <transition
+        appear
+        enter-active-class="animated slower bounceInUp"
+        leave-active-class="animated slower bounceOutDown"
+      >
+        <div v-if="show_app_install_banner" class="banner-container bg-primary">
+          <div class="constrain">
+            <q-banner
+              inline-actions
+              dense
+              class="bg-primary text-white">
+              <template v-slot:avatar>
+                <q-avatar
+                  color="white"
+                  text-color="black"
+                  icon="eva-image-2"
+                  font-size="22px"
+                  dense
+                />
+              </template>
+              <b> Install Picture Flex? </b>
 
-            <template v-slot:action>
-              <q-btn @click="installApp()" flat dense class="q-mr-sm" label="Yes"  />
-              <q-btn @click="hideInstallBanner()" flat dense class="q-mr-sm" label="Later" />
-              <q-btn @click="neverShowAppInstallBanner()" flat dense class="q-mr-sm" label="Never" />
-            </template>
-          </q-banner>
+              <template v-slot:action>
+                <q-btn @click="installApp()" flat dense class="q-mr-sm" label="Yes"  />
+                <q-btn @click="hideInstallBanner()" flat dense class="q-mr-sm" label="Later" />
+                <q-btn @click="neverShowAppInstallBanner()" flat dense class="q-mr-sm" label="Never" />
+              </template>
+            </q-banner>
+          </div>
         </div>
-      </div>
+      </transition>
       <q-tabs class="text-blue-grey-10 small-screen" active-color="primary" indicator-color="transparent">
         <q-route-tab to="/" icon="eva-home-outline" />
         <q-route-tab to="/camera" icon="eva-camera-outline" />
@@ -84,7 +90,9 @@ export default defineComponent({
         // Stash the event so it can be triggered later.
         deferredPrompt = e;
         // Optionally, send analytics event that PWA install promo was shown.
-        show_app_install_banner.value = true
+        setTimeout(() => {
+          show_app_install_banner.value = true
+        }, 3000);
       });
     }
     
