@@ -47,7 +47,7 @@ module.exports = configure(function (ctx) {
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       env: {
-        API: process.env.DEV ? API_LOCAL : API_PRODUCTION // API_LOCAL | API_PRODUCTION
+        API: process.env.DEV ? API_PRODUCTION : API_LOCAL // API_LOCAL | API_PRODUCTION
       },
       vueRouterMode: 'history', // available values: 'hash', 'history'
 
@@ -128,7 +128,7 @@ module.exports = configure(function (ctx) {
 
     // https://v2.quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
-      workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
+      workboxPluginMode: 'InjectManifest', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
 
       // for the custom service worker ONLY (/src-pwa/custom-service-worker.[js|ts])
