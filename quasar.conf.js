@@ -138,7 +138,7 @@ module.exports = configure(function (ctx) {
       },
 
       manifest: {
-        name: `Picture Flex`,
+        name: `For my beloved`,
         short_name: `Picture-flex`,
         description: `Share your experience and flex your pictures here`,
         display: 'standalone',

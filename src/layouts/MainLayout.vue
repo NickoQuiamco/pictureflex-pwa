@@ -7,12 +7,13 @@
           class="large-screen"
           size="18px"
           to="/camera"
+          disable
           flat
           round
           dense />
         <q-separator class="large-screen" vertical spaced />
         <q-toolbar-title class="text-grand-hotel text-bold">
-          Picture Flex
+          For my beloved
         </q-toolbar-title>
         <q-btn
           icon="eva-home-outline"
