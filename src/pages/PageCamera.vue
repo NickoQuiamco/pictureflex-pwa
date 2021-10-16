@@ -120,6 +120,10 @@ export default defineComponent({
       if('geolocation' in navigator ) return true
       return false
     })
+    const backgroundSyncSupported = computed(()=>{
+      if('serviceWorker' in navigator && 'SyncManager' in window ) return true
+      else return false
+    })
     // methods ***
     function initCamera(){
       navigator.mediaDevices.getUserMedia({
@@ -231,14 +235,25 @@ export default defineComponent({
         })
         Loading.hide()
       }).catch(err=>{
-        console.log(err);
-        q.notify({
-          message: 'Sorry, could not create post.',
-          position: 'top-right',
-          actions: [
-            { label: 'Dismiss', color: 'white', handler: () => { /* ... */ } }
-          ]
-        })
+        // console.log(err);
+        if (!navigator.onLine) {
+          q.notify({
+            message: 'Post created offline.',
+            position: 'top-right',
+            actions: [
+              { label: 'Dismiss', color: 'white', handler: () => { /* ... */ } }
+            ]
+          })
+          router.push('/')
+        }else{
+          q.notify({
+            message: 'Sorry, could not create post.',
+            position: 'top-right',
+            actions: [
+              { label: 'Dismiss', color: 'white', handler: () => { /* ... */ } }
+            ]
+          })
+        }
         Loading.hide()
       })
     }

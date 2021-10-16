@@ -1,5 +1,12 @@
 <template>
-    <q-card class="card-post q-mb-md" flat bordered>
+    <q-card
+      class="card-post q-mb-md"
+      :class="{ 'bg-red-1': props_data.offline }"
+      flat
+      bordered>
+      <q-badge v-if="props_data.offline" class="badge-offline absolute-top-right" color="red">
+        Stored Offline <q-icon name="warning" color="white" class="q-ml-xs" />
+      </q-badge>
       <q-item>
           <!-- {{ props_data }} -->
         <q-item-section avatar>
@@ -46,8 +53,11 @@ export default {
 </script>
 <style lang="scss" scoped>
 .card-post{
-    .q-img{
-        min-height: 200px;
-    }
+  .badge-offline{
+    border-top-left-radius: 0 !important;
+  }
+  .q-img{
+      min-height: 200px;
+  }
 }
 </style>

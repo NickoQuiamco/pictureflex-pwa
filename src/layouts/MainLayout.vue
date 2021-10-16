@@ -27,7 +27,11 @@
     </q-header>
 
     <q-page-container class="bg-grey-1">
-      <router-view />
+      <router-view v-slot="slotProps">
+        <keep-alive :include="['pageHome']">
+          <component :is="slotProps.Component"></component>
+        </keep-alive>
+      </router-view>
     </q-page-container>
 
     <q-footer class="bg-white" bordered >
