@@ -9,6 +9,7 @@
     let os = require('os') //allows us to get access in the temp folder
     let fs = require('fs') //allows us to right the file in temp folder
     let UUID = require('uuid-v4')
+    let webpush = require('web-push')
 /* 
     config - process
 */
@@ -25,6 +26,14 @@
 
     const db = admin.firestore();
     const bucket = admin.storage().bucket();
+/*
+    config - web push
+*/
+    webpush.setVapidDetails(
+        'mailto:test@test.com',
+        'BLftgvikd86kLw7Y2l_E91eWgvZRboeBSugrFLGInK3nTb8HWTrfKYkwDumHBCOibMEzGUCs7SgxGeGYzidYvIY', //public key 
+        'lWKUF_-cvKhiKKjq5P0g1HWXakQ3YN5Yb1hiRdCK1Lw' // private key
+    );
 /*
     endpoint - posts
 */
@@ -50,7 +59,7 @@ app.post('/createPost', (request, response) => {
     let file_data = {}
     let uuid = UUID()
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-        console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
+        // console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
     // /tmp/uid.png
         let filepath = path.join(os.tmpdir(), filename)
         file.pipe(fs.createWriteStream(filepath))
@@ -86,14 +95,56 @@ app.post('/createPost', (request, response) => {
                 date: parseInt(fields.date),
                 image_url: `https://firebasestorage.googleapis.com/v0/b/${ bucket.name }/o/${ uploaded_file.name }?alt=media&token=${ uuid }`,
             }).then(response=>{
+                sendPushNotification()
                 response.send('Post Added: ' + response)
             }).catch(err=>{
                 response.send(err)
             });
+        } 
+
+        function sendPushNotification(){
+            var subscriptions = [];
+            console.log("here dito");
+            db.collection('subscription').get().then(snapshot=>{
+                // console.log(snapshot);
+                snapshot.forEach((doc) => {
+                    subscriptions.push(doc.data())
+                });
+                return subscriptions
+            }).then(subscriptions=>{
+                console.log(subscriptions);
+                subscriptions.forEach(subscription=>{
+                    const pushSubscription = {
+                        endpoint: subscription.endpoint,
+                        keys: {
+                            auth: subscription.keys.auth,
+                            p256dh: subscription.keys.p256dh
+                        }
+                    }
+                    let pushContent = {
+                        title: "New post has been added!",
+                        body: "New post has been added! Check it out!",
+                        open_url: '/'
+                    }
+                    webpush.sendNotification(pushSubscription, JSON.stringify(pushContent) );
+                })
+            })
         }
-        // response.send("Done parsing form!")
     });
     request.pipe(busboy);
+})
+/*
+    endpoint - createSubscription
+*/
+app.post('/createSubscription', (request, response) => {
+    response.set('Access-Control-Allow-Origin', '*')
+    // console.log(request)
+    db.collection('subscription').add(request.query).then(docRef=>{
+        response.send({
+            message: 'Subscription added! ',
+            post_data: request.query
+        })
+    })
 })
 /* 
     listen

@@ -29,7 +29,9 @@
     <q-page-container class="bg-grey-1">
       <router-view v-slot="slotProps">
         <keep-alive :include="['pageHome']">
-          <component :is="slotProps.Component"></component>
+          <component :is="slotProps.Component">
+            <p>In Vue Router 3, I render inside the route component</p>
+          </component>
         </keep-alive>
       </router-view>
     </q-page-container>
@@ -85,7 +87,7 @@ export default defineComponent({
     const q = useQuasar()
     const show_app_install_banner = ref(false)
     let deferredPrompt;
-
+    // created lifecycle hook ***
     let never_show_app_install_banner = q.localStorage.getItem('never_show_app_install_banner')
     if(!never_show_app_install_banner){
       window.addEventListener('beforeinstallprompt', (e) => {

@@ -47,7 +47,7 @@ module.exports = configure(function (ctx) {
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       env: {
-        API: process.env.DEV ? API_PRODUCTION : API_LOCAL // API_LOCAL | API_PRODUCTION
+        API: API_PRODUCTION // API_LOCAL | API_PRODUCTION
       },
       vueRouterMode: 'history', // available values: 'hash', 'history'
 
@@ -101,7 +101,7 @@ module.exports = configure(function (ctx) {
 
     // animations: 'all', // --- includes all animations
     // https://v2.quasar.dev/options/animations
-    animations: ['bounceInUp','bounceOutDown'],
+    animations: ['bounceInUp', 'bounceOutDown', 'bounceInDown', 'bounceOutUp'],
 
     // https://v2.quasar.dev/quasar-cli/developing-ssr/configuring-ssr
     ssr: {
