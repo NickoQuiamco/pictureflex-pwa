@@ -147,7 +147,10 @@ export default defineComponent({
     function getPost(){
       // console.log(process.env.API);
       loadingPosts.value = true
-      axios.get(`${ process.env.API }/posts`).then(response=>{
+      // add a unique timestamp to the request URL for IE so that the request don't cached
+      let timestamp= ''
+      timestamp += '?timestamp=' + Date.now()
+      axios.get(`${ process.env.API }/posts${ timestamp }`).then(response=>{
         posts.value = response.data
         loadingPosts.value = false
         if (!navigator.onLine) {
