@@ -108,6 +108,7 @@
                         body: data.body,
                         icon: 'icons/icon-128x128.png',
                         badge: 'icons/icon-128x128.png',
+                        image: data.image_url,
                         data: {
                             open_url: data.open_url
                         }

@@ -224,8 +224,20 @@ export default defineComponent({
         spinnerSize: 120
         // other props
       })
+      let post_created = q.localStorage.getItem('post_created')
+      //catch the error in background sync the add post is not working if the user did not use the add function once befeore going offline
+      if(q.platform.is.android && !post_created && !navigator.onLine){
+        q.notify({
+          message: 'Sorry, could not create post.',
+          position: 'top-right',
+          actions: [
+            { label: 'Dismiss', color: 'white', handler: () => { /* ... */ } }
+          ]
+        })
+      }
       axios.post(`${ process.env.API }/createPost`, form_data).then(response=>{
         router.push("/")
+        q.localStorage.set("post_created", true)
         q.notify({
           message: 'Post created.',
           position: 'top-right',

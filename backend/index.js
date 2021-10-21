@@ -57,6 +57,8 @@ app.post('/createPost', (request, response) => {
     var busboy = new Busboy({ headers: request.headers });
     let fields = {}
     let file_data = {}
+    let image_url
+
     let uuid = UUID()
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
         // console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
@@ -88,12 +90,13 @@ app.post('/createPost', (request, response) => {
             }
         )
         function createDocument(uploaded_file){
+            image_url = `https://firebasestorage.googleapis.com/v0/b/${ bucket.name }/o/${ uploaded_file.name }?alt=media&token=${ uuid }`
             db.collection('posts').doc(fields.id).set({
                 id: fields.id,
                 caption: fields.caption,
                 location: fields.location,
                 date: parseInt(fields.date),
-                image_url: `https://firebasestorage.googleapis.com/v0/b/${ bucket.name }/o/${ uploaded_file.name }?alt=media&token=${ uuid }`,
+                image_url: image_url,
             }).then(response=>{
                 sendPushNotification()
                 response.send('Post Added: ' + response)
@@ -124,7 +127,8 @@ app.post('/createPost', (request, response) => {
                     let pushContent = {
                         title: "New post has been added!",
                         body: "New post has been added! Check it out!",
-                        open_url: '/'
+                        open_url: '/',
+                        image_url: image_url
                     }
                     webpush.sendNotification(pushSubscription, JSON.stringify(pushContent) );
                 })
