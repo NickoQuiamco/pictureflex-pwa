@@ -1,4 +1,4 @@
-# quasagram-pwa (quasagram-pwa)
+# pictureflex-pwa (pictureflex-pwa)
 
 instagram clone made in progressive web app
 
